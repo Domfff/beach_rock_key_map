@@ -180,6 +180,7 @@
                 if (layer.feature.properties.key === key) {
                     geojsonLayer.resetStyle();
                     layer.setStyle(highlightStyle(layer.feature));
+                    layer.bringToFront();
                     map.fitBounds(layer.getBounds(), { padding: [50, 50] });
                     layer.openPopup();
                 }
@@ -262,7 +263,10 @@
         document.getElementById('statsText').textContent =
             `${beachKeys.length.toLocaleString()} beaches, ${rockKeys.length.toLocaleString()} rock platforms`;
 
-        // Add to map
+        // Add to map (rock platforms first so beach lines render on top)
+        data.features.sort((a, b) =>
+            (a.properties.key_type === 'beach' ? 1 : 0) - (b.properties.key_type === 'beach' ? 1 : 0)
+        );
         geojsonLayer = L.geoJSON(data, {
             style: getStyle,
             onEachFeature: onEachFeature
